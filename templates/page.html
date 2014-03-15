@@ -1,39 +1,39 @@
-{{ define "document" }}
+{{define "document"}}
 <!DOCTYPE HTML>
 <head>
-	<title>TITLE</title>
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <title>{{if (eq .Title ".")}}Current{{else}}{{.Title}}{{end}}</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 </head>
 <body>
-	<div class="container">
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Last modified</th>
-					<th>Size</th>
-				</tr>
-			</thead>
-			<tbody>
-				{{ range .Entries }}
-					<tr>
-						<td>
-							<a href="{{.Url}}">{{.Name}}</a>
-						</td>
-						<td>
-							<span>{{.HumanTime}}</span>
-						</td>
-						<td>
-							{{if .IsDir}}
-								<span>-</span>
-							{{else}}
-								<span>{{.HumanSize}}</span>
-							{{end}}
-						</td>
-					</tr>
-				{{ end }}
-			</tbody>
-		</table>
-	</div>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Last modified</th>
+                    <th>Size</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Entries}}
+                    <tr>
+                        <td>
+                            <a href="{{.Url}}">{{.Name}}</a>
+                        </td>
+                        <td>
+                            <span>{{.HumanTime}}</span>
+                        </td>
+                        <td>
+                            {{if .IsDir}}
+                                <span>-</span>
+                            {{else}}
+                                <span>{{.HumanSize}}</span>
+                            {{end}}
+                        </td>
+                    </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
 </body>
-{{ end }}
+{{end}}

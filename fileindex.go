@@ -19,18 +19,18 @@ func ListFiles(dirpath string) (handler martini.Handler) {
 
 		handle, err := dir.Open(uri)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 			return
 		}
 		defer handle.Close()
 
 		log.Println("[Fileindex] Serving directory index of", dir, "at", uri)
 
-		writeHtml(w, handle)
+		writeHtml(w, handle, log)
 	}
 }
 
-func writeHtml(w http.ResponseWriter, handle http.File) {
+func writeHtml(w http.ResponseWriter, handle http.File, log *log.Logger) {
 	err := needsIndex(handle)
 	if err != nil {
 		return
@@ -41,18 +41,19 @@ func writeHtml(w http.ResponseWriter, handle http.File) {
 		return
 	}
 
-	infos, err := ioutil.ReadDir(dirinfo.Name())
+	err = executeTemplate(w, dirinfo)
 	if err != nil {
+		log.Println(err)
 		return
-	}
-
-	err = executeTemplate(w, infos)
-	if err != nil {
-		panic(err)
 	}
 }
 
-func executeTemplate(w http.ResponseWriter, infos []os.FileInfo) error {
+func executeTemplate(w http.ResponseWriter, dirinfo os.FileInfo) error {
+	infos, err := ioutil.ReadDir(dirinfo.Name())
+	if err != nil {
+		infos = make([]os.FileInfo, 0)
+	}
+
 	entries := make([]*Entry, len(infos))
 
 	for key, info := range infos {
@@ -78,8 +79,10 @@ func executeTemplate(w http.ResponseWriter, infos []os.FileInfo) error {
 
 	params := struct {
 		Entries []*Entry
+		Title   string
 	}{
 		entries,
+		dirinfo.Name(),
 	}
 
 	return t.Execute(w, params)
